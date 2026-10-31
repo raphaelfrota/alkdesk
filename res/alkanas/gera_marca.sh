@@ -8,8 +8,8 @@
 #
 # icone.svg            -> rosto escuro; vai sobre um quadrado branco arredondado
 #                         para ficar legível na barra de tarefas clara ou escura
-# logo-texto-escuro.svg -> logo_light.png (tema claro)
-# logo-texto-branco.svg -> logo_dark.png  (tema escuro)
+# icone.svg + logo-texto-escuro.svg              -> logo_light.png (tema claro)
+# icone-rosto-branco.svg + logo-texto-branco.svg -> logo_dark.png  (tema escuro)
 #
 # Requer macOS (sips), Google Chrome e python3.
 # ----------------------------------------------------------------------------
@@ -44,16 +44,20 @@ for lado in 16 24 32 48 64 128 256; do
     sips -z $lado $lado "$TMP/icone-1024.png" --out "$TMP/icone-$lado.png" >/dev/null
 done
 
+# Mascote + texto, sem sobra lateral: o app limita a logo a 300x60 e não centraliza.
+# Proporções dos SVGs: mascote 342x370, texto 407x78.
 logo() {
     cat > "$TMP/logo.html" <<EOF
 <html><body style="margin:0;background:transparent">
-<img src="file://$AQUI/$1" style="width:600px;height:115px;object-fit:contain;display:block">
-</body></html>
+<div style="width:571px;height:120px;display:flex;align-items:center;gap:22px">
+  <img src="file://$AQUI/$1" style="width:111px;height:120px;display:block">
+  <img src="file://$AQUI/$2" style="width:438px;height:84px;display:block">
+</div></body></html>
 EOF
-    render "$TMP/logo.html" 600 115 "$2"
+    render "$TMP/logo.html" 571 120 "$3"
 }
-logo logo-texto-escuro.svg "$RAIZ/flutter/assets/logo_light.png"
-logo logo-texto-branco.svg "$RAIZ/flutter/assets/logo_dark.png"
+logo icone.svg logo-texto-escuro.svg "$RAIZ/flutter/assets/logo_light.png"
+logo icone-rosto-branco.svg logo-texto-branco.svg "$RAIZ/flutter/assets/logo_dark.png"
 
 ICO="python3 -I $AQUI/ico.py"
 p() { for l in "$@"; do printf '%s ' "$TMP/icone-$l.png"; done; }

@@ -12,6 +12,7 @@ pub fn apply_builtin_settings() {
         keys::OPTION_HIDE_WEBSOCKET_SETTINGS,
         keys::OPTION_HIDE_SECURITY_SETTINGS,
         keys::OPTION_HIDE_STOP_SERVICE,
+        keys::OPTION_HIDE_POWERED_BY_ME,
         keys::OPTION_DISABLE_CHANGE_ID,
     ] {
         builtin.insert(k.to_owned(), "Y".to_owned());
