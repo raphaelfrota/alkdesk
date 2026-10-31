@@ -14,7 +14,9 @@ env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   VCPKG_COMMIT_ID: "9e593bb18ea69cc5095e012465dcd675a822ed0d"
   VERSION: "1.5.1"
-  # hbb_common é submódulo do upstream; servidor e chave entram no build em vez de num fork dele.
+  # hbb_common é submódulo do upstream; nome, servidor e chave entram no build em vez de num fork dele.
+  # O nome não pode ter espaço: vira nome de serviço no `sc create` sem aspas.
+  ALK_APP_NAME: "AlkDesk"
   ALK_RENDEZVOUS_SERVER: "alkdesk.alkanas.com"
   ALK_RS_PUB_KEY: "7BIJoY6M+dXnPugOwfDBm+8AQ88uDziKZew8gcdWq7M="
 
@@ -47,13 +49,15 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Servidor e chave Alkanas
+      - name: Nome, servidor e chave Alkanas
         shell: bash
         run: |
           cfg=libs/hbb_common/src/config.rs
+          sed -i "s|APP_NAME: RwLock<String> = RwLock::new(\"RustDesk\".to_owned());|APP_NAME: RwLock<String> = RwLock::new(\"${ALK_APP_NAME}\".to_owned());|" $cfg
           sed -i "s|^pub const RENDEZVOUS_SERVERS: &\[&str\] = .*|pub const RENDEZVOUS_SERVERS: \&[\&str] = \&[\"${ALK_RENDEZVOUS_SERVER}\"];|" $cfg
           sed -i "s|^pub const RS_PUB_KEY: &str = .*|pub const RS_PUB_KEY: \&str = \"${ALK_RS_PUB_KEY}\";|" $cfg
-          grep -n "^pub const RENDEZVOUS_SERVERS\|^pub const RS_PUB_KEY" $cfg
+          grep -n "APP_NAME: RwLock\|^pub const RENDEZVOUS_SERVERS\|^pub const RS_PUB_KEY" $cfg
+          grep -q "RwLock::new(\"${ALK_APP_NAME}\"" $cfg
           grep -q "\"${ALK_RENDEZVOUS_SERVER}\"" $cfg
           grep -q "\"${ALK_RS_PUB_KEY}\"" $cfg
 
@@ -183,7 +187,7 @@ jobs:
           python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/rustdesk.exe
           popd
           mkdir -p ./SignOutput
-          mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/rustdesk-${{ env.VERSION }}-x86_64.exe
+          mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/alkdesk-${{ env.VERSION }}-x86_64.exe
 
       - name: Upload exe
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
