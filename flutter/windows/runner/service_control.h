@@ -89,7 +89,7 @@ inline DWORD InstallService(const wchar_t* name, const wchar_t* executable,
   }
   const std::wstring binary_path =
       L"\"" + std::wstring(executable) + L"\" --service";
-  // Alkanas: same label as SERVICE_DISPLAY_NAME in src/alkanas.rs (legacy sc path).
+  // Alkanas: same label as DISPLAY_NAME in src/alkanas.rs (legacy sc path).
   const std::wstring display_name = L"Alkanas Suporte";
   ServiceHandle manager(
       OpenSCManagerW(nullptr, nullptr,

@@ -7,7 +7,8 @@
 #   flutter/assets/icon.ico, icon.png, logo_light.png, logo_dark.png
 #
 # icone.svg            -> rosto escuro; vai sobre um quadrado branco arredondado
-#                         para ficar legível na barra de tarefas clara ou escura
+#                         para ficar legível na barra de tarefas clara ou escura,
+#                         com selo-suporte.svg (headset roxo) no canto inferior direito
 # icone.svg + logo-texto-escuro.svg              -> logo_light.png (tema claro)
 # icone-rosto-branco.svg + logo-texto-branco.svg -> logo_dark.png  (tema escuro)
 #
@@ -31,11 +32,15 @@ render() {
     [ -s "$4" ] || { echo "❌ Chrome não gerou $4"; exit 1; }
 }
 
+# O mascote sozinho é o ícone do PDV: o selo de suporte (headset) no canto evita
+# que o operador abra o AlkDesk achando que é o sistema.
 cat > "$TMP/icone.html" <<EOF
 <html><body style="margin:0;background:transparent">
-<div style="width:1024px;height:1024px;box-sizing:border-box;padding:96px;
-            background:#fff;border-radius:200px;display:flex">
-  <img src="file://$AQUI/icone.svg" style="width:100%;height:100%;object-fit:contain">
+<div style="position:relative;width:1024px;height:1024px;background:#fff;border-radius:200px">
+  <img src="file://$AQUI/icone.svg" style="position:absolute;left:56px;top:48px;width:740px;height:740px;object-fit:contain">
+  <div style="position:absolute;right:0;bottom:0;width:500px;height:500px;border-radius:50%;background:#fff;display:flex">
+    <img src="file://$AQUI/selo-suporte.svg" style="margin:36px;width:428px;height:428px">
+  </div>
 </div></body></html>
 EOF
 render "$TMP/icone.html" 1024 1024 "$TMP/icone-1024.png"

@@ -1692,9 +1692,10 @@ pub fn install_me(options: &str, path: String, silent: bool, debug: bool) -> Res
     let mut shortcuts = Default::default();
     if options.contains("desktopicon") {
         shortcuts = format!(
-            "copy /Y \"{}\\{}.lnk\" \"%PUBLIC%\\Desktop\\\"",
-            tmp_path,
-            crate::get_app_name()
+            "if exist \"%PUBLIC%\\Desktop\\{app_name}.lnk\" del /f /q \"%PUBLIC%\\Desktop\\{app_name}.lnk\"
+copy /Y \"{tmp_path}\\{app_name}.lnk\" \"%PUBLIC%\\Desktop\\{display_name}.lnk\"",
+            app_name = crate::get_app_name(),
+            display_name = crate::alkanas::DISPLAY_NAME
         );
         reg_value_desktop_shortcuts = "1".to_owned();
     }
@@ -1702,9 +1703,10 @@ pub fn install_me(options: &str, path: String, silent: bool, debug: bool) -> Res
         shortcuts = format!(
             "{shortcuts}
 md \"{start_menu}\"
-copy /Y \"{tmp_path}\\{app_name}.lnk\" \"{start_menu}\\\"
+copy /Y \"{tmp_path}\\{app_name}.lnk\" \"{start_menu}\\{display_name}.lnk\"
 copy /Y \"{tmp_path}\\Uninstall {app_name}.lnk\" \"{start_menu}\\\"
-     "
+     ",
+            display_name = crate::alkanas::DISPLAY_NAME
         );
         reg_value_start_menu_shortcuts = "1".to_owned();
     }
@@ -1903,11 +1905,13 @@ fn get_uninstall(kill_self: bool, uninstall_printer: bool) -> ResultType<String>
     if exist \"{path}\" rd /s /q \"{path}\"
     if exist \"{start_menu}\" rd /s /q \"{start_menu}\"
     if exist \"%PUBLIC%\\Desktop\\{app_name}.lnk\" del /f /q \"%PUBLIC%\\Desktop\\{app_name}.lnk\"
+    if exist \"%PUBLIC%\\Desktop\\{display_name}.lnk\" del /f /q \"%PUBLIC%\\Desktop\\{display_name}.lnk\"
     if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\" del /f /q \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\"
     ",
         before_uninstall=get_before_uninstall(kill_self)?,
         uninstall_amyuni_idd=get_uninstall_amyuni_idd(),
         app_name = crate::get_app_name(),
+        display_name = crate::alkanas::DISPLAY_NAME,
     ))
 }
 
@@ -4087,7 +4091,7 @@ sc create {app_name} binpath= \"\\\"{exe}\\\" --service\" start= auto DisplayNam
 sc start {app_name}
 ",
     app_name = crate::get_app_name(),
-    display_name = crate::alkanas::SERVICE_DISPLAY_NAME)
+    display_name = crate::alkanas::DISPLAY_NAME)
     }
 }
 

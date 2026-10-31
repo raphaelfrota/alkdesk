@@ -1,9 +1,10 @@
 use base::config::keys;
 use hbb_common::config;
 
-// The service name stays APP_NAME (used to start, stop and query it); only the
-// label in services.msc follows the other Alkanas services ("Alkanas Tunnel"...).
-pub const SERVICE_DISPLAY_NAME: &str = "Alkanas Suporte";
+// APP_NAME (AlkDesk) stays the service, exe and folder name; what people see
+// follows the other Alkanas services ("Alkanas Tunnel"...): the services.msc
+// label and the desktop/start menu shortcuts.
+pub const DISPLAY_NAME: &str = "Alkanas Suporte";
 
 // custom.txt must be signed with RustDesk's key, so these are applied here instead.
 // The permanent password is hidden, not locked: the Alkanas installer and
