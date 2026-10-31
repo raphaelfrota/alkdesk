@@ -110,6 +110,14 @@ inline DWORD InstallService(const wchar_t* name, const wchar_t* executable,
   // account, as the previous create-then-start script did.
   if (!service && GetLastError() == ERROR_SERVICE_EXISTS) {
     service.reset(OpenServiceW(manager.get(), name, SERVICE_START));
+    // Alkanas: a registration from an older build keeps its old label otherwise.
+    ServiceHandle config(service ? OpenServiceW(manager.get(), name, SERVICE_CHANGE_CONFIG) : nullptr,
+                         CloseServiceHandle);
+    if (config) {
+      ChangeServiceConfigW(config.get(), SERVICE_NO_CHANGE, SERVICE_NO_CHANGE,
+                           SERVICE_NO_CHANGE, nullptr, nullptr, nullptr, nullptr,
+                           nullptr, nullptr, display_name.c_str());
+    }
   }
   if (!service) {
     return GetLastError();
